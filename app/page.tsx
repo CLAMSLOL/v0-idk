@@ -120,7 +120,7 @@ const GAMES_DATA: GamesData = {
       name: "Territorial.io",
       description: "Conquer territory and dominate the map in this multiplayer strategy game",
       category: "Strategy",
-      iframe: "https://unblocked-games.org/game/territorial-io.embed",
+      iframe: "/territorial-io.html",
       thumbnail: "🗺️"
     }
   ],
