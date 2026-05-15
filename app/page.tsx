@@ -264,6 +264,7 @@ export default function GamesPage() {
                   </div>
                 )}
               </div>
+            </div>
             )}
           </div>
         </div>
