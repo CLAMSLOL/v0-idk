@@ -27,7 +27,11 @@ export default function GamesPage() {
   useEffect(() => {
     fetch("/games.json")
       .then((res) => res.json())
-      .then((data) => setGamesData(data))
+      .then((data) => {
+        console.log("[v0] Games loaded:", data.games.length, "games");
+        console.log("[v0] Game names:", data.games.map((g: Game) => g.name));
+        setGamesData(data);
+      })
       .catch((err) => console.error("Failed to load games:", err));
   }, []);
 
