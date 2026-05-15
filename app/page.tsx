@@ -413,9 +413,12 @@ function GameModal({ game, onClose }: { game: Game; onClose: () => void }) {
 
 function LinksSection() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [linkValues, setLinkValues] = useState<Record<string, string>>(
+    LINKS_DATA.reduce((acc, link) => ({ ...acc, [link.id]: link.value }), {})
+  );
 
-  const handleCopy = async (id: string, value: string) => {
-    await navigator.clipboard.writeText(value);
+  const handleCopy = async (id: string) => {
+    await navigator.clipboard.writeText(linkValues[id]);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
@@ -434,7 +437,7 @@ function LinksSection() {
         Copy these links to access alternate sites and proxies.
       </p>
 
-      {/* Read-only textboxes */}
+      {/* Editable textboxes */}
       <div className="flex flex-col gap-4">
         {LINKS_DATA.map((link) => (
           <div key={link.id} className="flex flex-col gap-2">
@@ -442,16 +445,15 @@ function LinksSection() {
               {link.title}
             </label>
             <div className="flex gap-2">
-              <input
-                type="text"
-                value={link.value}
-                readOnly
-                className="flex-1 px-4 py-3 bg-secondary border border-border rounded-lg text-foreground cursor-default select-all focus:outline-none focus:ring-2 focus:ring-primary/50"
-                onFocus={(e) => e.target.select()}
+              <textarea
+                value={linkValues[link.id]}
+                onChange={(e) => setLinkValues(prev => ({ ...prev, [link.id]: e.target.value }))}
+                className="flex-1 px-4 py-3 bg-secondary border border-border rounded-lg text-foreground resize-none min-h-[100px] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                rows={3}
               />
               <button
-                onClick={() => handleCopy(link.id, link.value)}
-                className="px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
+                onClick={() => handleCopy(link.id)}
+                className="px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 h-fit"
                 aria-label={`Copy ${link.title}`}
               >
                 {copiedId === link.id ? (
