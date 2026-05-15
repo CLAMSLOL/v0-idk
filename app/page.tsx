@@ -217,7 +217,7 @@ export default function GamesPage() {
 
             {/* Search & Filter - Only show for games tab */}
             {activeTab === "games" && (
-            <div className="flex flex-1 gap-3 sm:justify-end">
+              <div className="flex flex-1 gap-3 sm:justify-end">
               {/* Search */}
               <div className="relative flex-1 sm:max-w-xs">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
