@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Search, X, Gamepad2, Grid3X3, ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, X, Gamepad2, Grid3X3, ChevronDown, Link, Plus, Trash2, Save } from "lucide-react";
 
 interface Game {
   id: string;
@@ -120,7 +120,7 @@ const GAMES_DATA: GamesData = {
       name: "Territorial.io",
       description: "Conquer territory and dominate the map in this multiplayer strategy game",
       category: "Strategy",
-      iframe: "https://unblocked-games.org/game/territorial-io.embed",
+      iframe: "/territorial-io.html",
       thumbnail: "🗺️"
     }
   ],
@@ -220,6 +220,9 @@ export default function GamesPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* HTML Links Section */}
+        <HtmlLinksSection />
+
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-muted-foreground">
@@ -350,5 +353,172 @@ function GameModal({ game, onClose }: { game: Game; onClose: () => void }) {
         </div>
       </div>
     </div>
+  );
+}
+
+interface HtmlLink {
+  id: string;
+  content: string;
+}
+
+function HtmlLinksSection() {
+  const [links, setLinks] = useState<HtmlLink[]>([]);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<string | null>(null);
+  const [defaultContent, setDefaultContent] = useState<string>("");
+
+  useEffect(() => {
+    // Load the default HTML content from the public file
+    fetch("/territorial-io.html")
+      .then((res) => res.text())
+      .then((html) => {
+        setDefaultContent(html);
+        const saved = localStorage.getItem("html-links");
+        if (saved) {
+          try {
+            setLinks(JSON.parse(saved));
+          } catch {
+            setLinks([{ id: "1", content: html }]);
+          }
+        } else {
+          setLinks([{ id: "1", content: html }]);
+        }
+      })
+      .catch(() => {
+        const fallback = "<!-- Territorial.io HTML -->";
+        setDefaultContent(fallback);
+        const saved = localStorage.getItem("html-links");
+        if (saved) {
+          try {
+            setLinks(JSON.parse(saved));
+          } catch {
+            setLinks([{ id: "1", content: fallback }]);
+          }
+        } else {
+          setLinks([{ id: "1", content: fallback }]);
+        }
+      });
+  }, []);
+
+  const saveLinks = (newLinks: HtmlLink[]) => {
+    setLinks(newLinks);
+    localStorage.setItem("html-links", JSON.stringify(newLinks));
+    setSaveStatus("Saved!");
+    setTimeout(() => setSaveStatus(null), 2000);
+  };
+
+  const updateLink = (id: string, content: string) => {
+    const newLinks = links.map((link) =>
+      link.id === id ? { ...link, content } : link
+    );
+    setLinks(newLinks);
+  };
+
+  const addLink = () => {
+    const newLink: HtmlLink = {
+      id: Date.now().toString(),
+      content: "",
+    };
+    saveLinks([...links, newLink]);
+  };
+
+  const removeLink = (id: string) => {
+    if (links.length > 1) {
+      saveLinks(links.filter((link) => link.id !== id));
+    }
+  };
+
+  const handleSave = () => {
+    saveLinks(links);
+  };
+
+  return (
+    <section className="max-w-7xl mx-auto px-4 py-6 mb-8">
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
+        {/* Section Header */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex items-center justify-between px-6 py-4 hover:bg-secondary/50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
+              <Link className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <div className="text-left">
+              <h2 className="font-semibold text-card-foreground">HTML Links</h2>
+              <p className="text-xs text-muted-foreground">
+                {links.length} saved link{links.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+          </div>
+          <ChevronDown
+            className={`w-5 h-5 text-muted-foreground transition-transform ${
+              isExpanded ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+
+        {/* Expanded Content */}
+        {isExpanded && (
+          <div className="px-6 pb-6 space-y-4">
+            {/* Action Bar */}
+            <div className="flex items-center justify-between pt-2 border-t border-border">
+              <button
+                onClick={addLink}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+              >
+                <Plus className="w-4 h-4" />
+                Add Link
+              </button>
+              <div className="flex items-center gap-3">
+                {saveStatus && (
+                  <span className="text-sm text-green-500 font-medium">
+                    {saveStatus}
+                  </span>
+                )}
+                <button
+                  onClick={handleSave}
+                  className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors text-sm font-medium"
+                >
+                  <Save className="w-4 h-4" />
+                  Save All
+                </button>
+              </div>
+            </div>
+
+            {/* Links List */}
+            <div className="space-y-4">
+              {links.map((link, index) => (
+                <div
+                  key={link.id}
+                  className="bg-secondary/30 border border-border rounded-lg overflow-hidden"
+                >
+                  <div className="flex items-center justify-between px-4 py-2 bg-secondary/50 border-b border-border">
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Link #{index + 1}
+                    </span>
+                    <button
+                      onClick={() => removeLink(link.id)}
+                      disabled={links.length === 1}
+                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      aria-label="Remove link"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <textarea
+                    value={link.content}
+                    onChange={(e) => updateLink(link.id, e.target.value)}
+                    onBlur={handleSave}
+                    placeholder="Paste your HTML link or code here..."
+                    className="w-full h-40 px-4 py-3 bg-transparent text-foreground placeholder:text-muted-foreground font-mono text-sm resize-y focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-inset"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
