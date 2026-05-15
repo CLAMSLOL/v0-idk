@@ -356,22 +356,6 @@ function GameModal({ game, onClose }: { game: Game; onClose: () => void }) {
   );
 }
 
-const DEFAULT_FIRST_LINK = `<!--I did not make this game, this so so people at my school can play it!-->
-<!DOCTYPE html>
-<!-- saved from url=(0023)https://territorial.io/ -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Territorial.io</title>
-  <meta name="description" content="Territorial.io - The Art of Conquest">
-  <style>
-    html, body { overflow: hidden; padding: 0; margin: 0; background: rgb(128, 128, 128); }
-    canvas { background: rgb(128, 128, 128); }
-  </style>
-</head>
-<body>
-  <canvas id="canvasA" width="1920" height="1080"></canvas>
-</body>
-</html>`;
-
 interface HtmlLink {
   id: string;
   content: string;
@@ -381,18 +365,39 @@ function HtmlLinksSection() {
   const [links, setLinks] = useState<HtmlLink[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
+  const [defaultContent, setDefaultContent] = useState<string>("");
 
   useEffect(() => {
-    const saved = localStorage.getItem("html-links");
-    if (saved) {
-      try {
-        setLinks(JSON.parse(saved));
-      } catch {
-        setLinks([{ id: "1", content: DEFAULT_FIRST_LINK }]);
-      }
-    } else {
-      setLinks([{ id: "1", content: DEFAULT_FIRST_LINK }]);
-    }
+    // Load the default HTML content from the public file
+    fetch("/territorial-io.html")
+      .then((res) => res.text())
+      .then((html) => {
+        setDefaultContent(html);
+        const saved = localStorage.getItem("html-links");
+        if (saved) {
+          try {
+            setLinks(JSON.parse(saved));
+          } catch {
+            setLinks([{ id: "1", content: html }]);
+          }
+        } else {
+          setLinks([{ id: "1", content: html }]);
+        }
+      })
+      .catch(() => {
+        const fallback = "<!-- Territorial.io HTML -->";
+        setDefaultContent(fallback);
+        const saved = localStorage.getItem("html-links");
+        if (saved) {
+          try {
+            setLinks(JSON.parse(saved));
+          } catch {
+            setLinks([{ id: "1", content: fallback }]);
+          }
+        } else {
+          setLinks([{ id: "1", content: fallback }]);
+        }
+      });
   }, []);
 
   const saveLinks = (newLinks: HtmlLink[]) => {
