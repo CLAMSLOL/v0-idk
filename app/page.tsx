@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, X, Gamepad2, Grid3X3, ChevronDown } from "lucide-react";
+import { Search, X, Gamepad2, Grid3X3, ChevronDown, Link2, Copy, Check } from "lucide-react";
 
 interface Game {
   id: string;
@@ -127,7 +127,31 @@ const GAMES_DATA: GamesData = {
   categories: ["All", "Arcade", "Puzzle", "Strategy", "Word", "Card"]
 };
 
+const LINKS_DATA = [
+  {
+    id: "1",
+    title: "Proxy Link 1",
+    value: "https://example-proxy-1.com/browse"
+  },
+  {
+    id: "2",
+    title: "Proxy Link 2",
+    value: "https://example-proxy-2.com/browse"
+  },
+  {
+    id: "3",
+    title: "Alternate Site",
+    value: "https://unblocked-games-mirror.com"
+  },
+  {
+    id: "4",
+    title: "Backup URL",
+    value: "https://games-backup-site.net"
+  }
+];
+
 export default function GamesPage() {
+  const [activeTab, setActiveTab] = useState<"games" | "links">("games");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
@@ -165,7 +189,34 @@ export default function GamesPage() {
               </div>
             </div>
 
-            {/* Search & Filter */}
+            {/* Tab Switcher */}
+            <div className="flex bg-secondary rounded-lg p-1">
+              <button
+                onClick={() => setActiveTab("games")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === "games"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Gamepad2 className="w-4 h-4" />
+                Games
+              </button>
+              <button
+                onClick={() => setActiveTab("links")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === "links"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Link2 className="w-4 h-4" />
+                Links
+              </button>
+            </div>
+
+            {/* Search & Filter - Only show for games tab */}
+            {activeTab === "games" && (
             <div className="flex flex-1 gap-3 sm:justify-end">
               {/* Search */}
               <div className="relative flex-1 sm:max-w-xs">
@@ -213,42 +264,48 @@ export default function GamesPage() {
                   </div>
                 )}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-muted-foreground">
-            {filteredGames?.length || 0} games found
-            {selectedCategory !== "All" && (
-              <span className="ml-2 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
-                {selectedCategory}
-              </span>
-            )}
-          </p>
-        </div>
+        {activeTab === "games" ? (
+          <>
+            {/* Results Count */}
+            <div className="mb-6">
+              <p className="text-muted-foreground">
+                {filteredGames?.length || 0} games found
+                {selectedCategory !== "All" && (
+                  <span className="ml-2 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                    {selectedCategory}
+                  </span>
+                )}
+              </p>
+            </div>
 
-        {/* Games Grid */}
-        {filteredGames && filteredGames.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredGames.map((game) => (
-              <GameCard
-                key={game.id}
-                game={game}
-                onClick={() => setSelectedGame(game)}
-              />
-            ))}
-          </div>
+            {/* Games Grid */}
+            {filteredGames && filteredGames.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filteredGames.map((game) => (
+                  <GameCard
+                    key={game.id}
+                    game={game}
+                    onClick={() => setSelectedGame(game)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                <Search className="w-12 h-12 mb-4 opacity-50" />
+                <p className="text-lg">No games found</p>
+                <p className="text-sm">Try a different search or category</p>
+              </div>
+            )}
+          </>
         ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <Search className="w-12 h-12 mb-4 opacity-50" />
-            <p className="text-lg">No games found</p>
-            <p className="text-sm">Try a different search or category</p>
-          </div>
+          <LinksSection />
         )}
       </main>
 
@@ -348,6 +405,69 @@ function GameModal({ game, onClose }: { game: Game; onClose: () => void }) {
         <div className="px-6 py-4 border-t border-border">
           <p className="text-sm text-muted-foreground">{game.description}</p>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function LinksSection() {
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopy = async (id: string, value: string) => {
+    await navigator.clipboard.writeText(value);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto">
+      {/* Non-editable Title */}
+      <h2
+        className="text-2xl font-bold text-foreground mb-2 select-none pointer-events-none"
+        contentEditable={false}
+        suppressContentEditableWarning
+      >
+        Useful Links
+      </h2>
+      <p className="text-muted-foreground mb-8 select-none">
+        Copy these links to access alternate sites and proxies.
+      </p>
+
+      {/* Read-only textboxes */}
+      <div className="flex flex-col gap-4">
+        {LINKS_DATA.map((link) => (
+          <div key={link.id} className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-foreground select-none pointer-events-none">
+              {link.title}
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={link.value}
+                readOnly
+                className="flex-1 px-4 py-3 bg-secondary border border-border rounded-lg text-foreground cursor-default select-all focus:outline-none focus:ring-2 focus:ring-primary/50"
+                onFocus={(e) => e.target.select()}
+              />
+              <button
+                onClick={() => handleCopy(link.id, link.value)}
+                className="px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2"
+                aria-label={`Copy ${link.title}`}
+              >
+                {copiedId === link.id ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    <span className="hidden sm:inline">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span className="hidden sm:inline">Copy</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
