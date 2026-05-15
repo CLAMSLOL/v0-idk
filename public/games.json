@@ -1,0 +1,101 @@
+{
+  "games": [
+    {
+      "id": "1",
+      "name": "2048",
+      "description": "Join the numbers and get to the 2048 tile!",
+      "category": "Puzzle",
+      "iframe": "https://play2048.co/",
+      "thumbnail": "🎮"
+    },
+    {
+      "id": "2",
+      "name": "Tetris",
+      "description": "The classic block-stacking puzzle game",
+      "category": "Arcade",
+      "iframe": "https://tetris.com/play-tetris",
+      "thumbnail": "🧱"
+    },
+    {
+      "id": "3",
+      "name": "Snake",
+      "description": "Guide the snake to eat food and grow longer",
+      "category": "Arcade",
+      "iframe": "https://playsnake.org/",
+      "thumbnail": "🐍"
+    },
+    {
+      "id": "4",
+      "name": "Pac-Man",
+      "description": "Eat all the dots while avoiding ghosts",
+      "category": "Arcade",
+      "iframe": "https://www.google.com/logos/2010/pacman10-i.html",
+      "thumbnail": "👾"
+    },
+    {
+      "id": "5",
+      "name": "Minesweeper",
+      "description": "Clear the minefield without detonating any mines",
+      "category": "Puzzle",
+      "iframe": "https://minesweeper.online/",
+      "thumbnail": "💣"
+    },
+    {
+      "id": "6",
+      "name": "Chess",
+      "description": "The classic game of strategy",
+      "category": "Strategy",
+      "iframe": "https://www.chess.com/play/computer",
+      "thumbnail": "♟️"
+    },
+    {
+      "id": "7",
+      "name": "Sudoku",
+      "description": "Fill the grid with numbers 1-9",
+      "category": "Puzzle",
+      "iframe": "https://sudoku.com/",
+      "thumbnail": "🔢"
+    },
+    {
+      "id": "8",
+      "name": "Flappy Bird",
+      "description": "Navigate through the pipes without crashing",
+      "category": "Arcade",
+      "iframe": "https://flappybird.io/",
+      "thumbnail": "🐦"
+    },
+    {
+      "id": "9",
+      "name": "Wordle",
+      "description": "Guess the five-letter word in six tries",
+      "category": "Word",
+      "iframe": "https://www.nytimes.com/games/wordle/index.html",
+      "thumbnail": "📝"
+    },
+    {
+      "id": "10",
+      "name": "Crossy Road",
+      "description": "Help the chicken cross the road",
+      "category": "Arcade",
+      "iframe": "https://crossyroad.com/",
+      "thumbnail": "🐔"
+    },
+    {
+      "id": "11",
+      "name": "Solitaire",
+      "description": "The classic card game",
+      "category": "Card",
+      "iframe": "https://www.solitr.com/",
+      "thumbnail": "🃏"
+    },
+    {
+      "id": "12",
+      "name": "Tic Tac Toe",
+      "description": "Get three in a row to win",
+      "category": "Strategy",
+      "iframe": "https://playtictactoe.org/",
+      "thumbnail": "⭕"
+    }
+  ],
+  "categories": ["All", "Arcade", "Puzzle", "Strategy", "Word", "Card"]
+}
