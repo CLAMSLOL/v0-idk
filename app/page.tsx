@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Search, X, Gamepad2, Grid3X3, ChevronDown } from "lucide-react";
 
 interface Game {
@@ -17,25 +17,123 @@ interface GamesData {
   categories: string[];
 }
 
+const GAMES_DATA: GamesData = {
+  games: [
+    {
+      id: "1",
+      name: "2048",
+      description: "Join the numbers and get to the 2048 tile!",
+      category: "Puzzle",
+      iframe: "https://play2048.co/",
+      thumbnail: "🎮"
+    },
+    {
+      id: "2",
+      name: "Tetris",
+      description: "The classic block-stacking puzzle game",
+      category: "Arcade",
+      iframe: "https://tetris.com/play-tetris",
+      thumbnail: "🧱"
+    },
+    {
+      id: "3",
+      name: "Snake",
+      description: "Guide the snake to eat food and grow longer",
+      category: "Arcade",
+      iframe: "https://playsnake.org/",
+      thumbnail: "🐍"
+    },
+    {
+      id: "4",
+      name: "Pac-Man",
+      description: "Eat all the dots while avoiding ghosts",
+      category: "Arcade",
+      iframe: "https://www.google.com/logos/2010/pacman10-i.html",
+      thumbnail: "👾"
+    },
+    {
+      id: "5",
+      name: "Minesweeper",
+      description: "Clear the minefield without detonating any mines",
+      category: "Puzzle",
+      iframe: "https://minesweeper.online/",
+      thumbnail: "💣"
+    },
+    {
+      id: "6",
+      name: "Chess",
+      description: "The classic game of strategy",
+      category: "Strategy",
+      iframe: "https://www.chess.com/play/computer",
+      thumbnail: "♟️"
+    },
+    {
+      id: "7",
+      name: "Sudoku",
+      description: "Fill the grid with numbers 1-9",
+      category: "Puzzle",
+      iframe: "https://sudoku.com/",
+      thumbnail: "🔢"
+    },
+    {
+      id: "8",
+      name: "Flappy Bird",
+      description: "Navigate through the pipes without crashing",
+      category: "Arcade",
+      iframe: "https://flappybird.io/",
+      thumbnail: "🐦"
+    },
+    {
+      id: "9",
+      name: "Wordle",
+      description: "Guess the five-letter word in six tries",
+      category: "Word",
+      iframe: "https://www.nytimes.com/games/wordle/index.html",
+      thumbnail: "📝"
+    },
+    {
+      id: "10",
+      name: "Crossy Road",
+      description: "Help the chicken cross the road",
+      category: "Arcade",
+      iframe: "https://crossyroad.com/",
+      thumbnail: "🐔"
+    },
+    {
+      id: "11",
+      name: "Solitaire",
+      description: "The classic card game",
+      category: "Card",
+      iframe: "https://www.solitr.com/",
+      thumbnail: "🃏"
+    },
+    {
+      id: "12",
+      name: "Tic Tac Toe",
+      description: "Get three in a row to win",
+      category: "Strategy",
+      iframe: "https://playtictactoe.org/",
+      thumbnail: "⭕"
+    },
+    {
+      id: "13",
+      name: "Territorial.io",
+      description: "Conquer territory and dominate the map in this multiplayer strategy game",
+      category: "Strategy",
+      iframe: "https://unblocked-games.org/game/territorial-io.embed",
+      thumbnail: "🗺️"
+    }
+  ],
+  categories: ["All", "Arcade", "Puzzle", "Strategy", "Word", "Card"]
+};
+
 export default function GamesPage() {
-  const [gamesData, setGamesData] = useState<GamesData | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  useEffect(() => {
-    fetch("/games.json")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("[v0] Games loaded:", data.games.length, "games");
-        console.log("[v0] Game names:", data.games.map((g: Game) => g.name));
-        setGamesData(data);
-      })
-      .catch((err) => console.error("Failed to load games:", err));
-  }, []);
-
-  const filteredGames = gamesData?.games.filter((game) => {
+  const filteredGames = GAMES_DATA.games.filter((game) => {
     const matchesSearch =
       game.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       game.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -45,17 +143,6 @@ export default function GamesPage() {
   });
 
   const closeModal = () => setSelectedGame(null);
-
-  if (!gamesData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-3 text-muted-foreground">
-          <Gamepad2 className="w-6 h-6 animate-pulse" />
-          <span>Loading games...</span>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen">
@@ -107,7 +194,7 @@ export default function GamesPage() {
 
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-40 bg-popover border border-border rounded-lg shadow-xl z-50 overflow-hidden">
-                    {gamesData.categories.map((category) => (
+                    {GAMES_DATA.categories.map((category) => (
                       <button
                         key={category}
                         onClick={() => {
